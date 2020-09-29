@@ -1,4 +1,6 @@
+const e = require('express');
 const express = require('express');
+const shortid = require('shortid');
 
 const server = express();
 
@@ -27,6 +29,7 @@ server.get('/api/users', (req, res) => {
   }
 });
 
+// GET /api/users/:id
 server.get('/api/users/:id', (req, res) => {
   // pull the id from the url
   const { id } = req.params;
@@ -48,6 +51,28 @@ server.get('/api/users/:id', (req, res) => {
     res
       .status(500)
       .json({ errorMessage: 'The user information could not be retireved' });
+  }
+});
+
+// POST /api/users
+server.post('/api/users', (req, res) => {
+  const userInfo = req.body;
+  const { name, bio } = userInfo;
+
+  try {
+    if (name && bio) {
+      userInfo.id = shortid.generate();
+      users.push(userInfo);
+      res.status(201).json(users);
+    } else {
+      res
+        .status(400)
+        .json({ errorMessage: 'Please provide name and bio for the user' });
+    }
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: 'There was an error while saving the user to the database'
+    });
   }
 });
 
